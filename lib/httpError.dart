@@ -1,4 +1,4 @@
-class HttpError {
+class HttpError implements Exception {
   final int statusCode;
   final String message;
 

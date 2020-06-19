@@ -78,6 +78,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  dart2_constant:
+    dependency: transitive
+    description:
+      name: dart2_constant
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2+dart2"
+  dotenv:
+    dependency: "direct main"
+    description:
+      name: dotenv
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   glob:
     dependency: transitive
     description:
@@ -93,7 +107,7 @@ packages:
     source: hosted
     version: "0.14.0+3"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -211,6 +225,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.4"
+  public_suffix:
+    dependency: "direct main"
+    description:
+      name: public_suffix
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
+  punycode:
+    dependency: transitive
+    description:
+      name: punycode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   shelf:
     dependency: transitive
     description:
