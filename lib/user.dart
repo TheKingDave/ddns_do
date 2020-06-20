@@ -19,7 +19,7 @@ class User {
       password: split[2],
     );
   }
-  
+
   bool checkPassword(String password) {
     return DBCrypt().checkpw(password, this.password);
   }

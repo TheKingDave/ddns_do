@@ -50,7 +50,7 @@ class DigitalOcean {
 
   Future<IdIp> getRecord(String domain) async {
     final suffix = getDomain(domain);
-    
+
     final url = Uri.parse('$_baseUrl${suffix.domain}/records')
         .replace(queryParameters: {'type': 'A', 'name': domain});
 

@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:ddns_do/user.dart';
 import 'package:dotenv/dotenv.dart' show load, env;
 
+import 'package:ddns_do/user.dart';
 import 'package:ddns_do/httpError.dart';
 import 'package:ddns_do/config.dart';
 import 'package:ddns_do/ddns_do.dart';
