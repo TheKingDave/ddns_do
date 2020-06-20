@@ -1,0 +1,23 @@
+# .env file to load
+dotenv: .env
+# host to bind to
+host: 0.0.0.0
+# port to listen to
+port: 4040
+# env variable to get the do auth token from
+doAuthTokenEnv: DO_AUTH_TOKEN
+# TTL for domain entries
+ttl: 60
+# File to load for ddns data
+ddns_file: ddns
+
+# Default prioritization for sent or remote ip
+default_prioritize: sent
+
+# HTTP query parameter mapping
+query:
+  ip: ipaddr
+  domain: domain
+  user: user
+  password: pw 
+  prioritize: prioritize

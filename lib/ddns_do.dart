@@ -17,13 +17,18 @@ class DDNS {
 
     final params = request.uri.queryParameters;
 
-    final prioritize = params['prioritize'] ?? 'sent';
-    final domain = params['domain'];
-    final user = params['user'];
-    final password = params['pw'];
-    
-    var ip = params['ip'];
     final remoteIp = request.connectionInfo.remoteAddress.address;
+    final prioritize = params[config.query.prioritize] ?? config.default_prioritize;
+    final domain = params[config.query.domain];
+    final user = params[config.query.user];
+    final password = params[config.query.password];
+    var ip = params[config.query.ip] ?? remoteIp;
+    
+    if(domain == null || domain.isEmpty) {
+      throw HttpError('Domain and ip are needed parameters', 400);
+    }
+
+    print('Request $remoteIp $params');
     
     // Check if ips are different, check prioritization
     if(ip != remoteIp) {
