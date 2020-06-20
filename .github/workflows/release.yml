@@ -1,0 +1,58 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create release
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }} 
+          draft: true
+          prerelease: false
+  
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: release
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        include:
+          - os: ubuntu-latest
+            output-name: ddns-do-ubuntu
+          - os: windows-latest
+            output-name: ddns-do-windows.exe
+          - os: macOS-latest
+            output-name: ddns-do-mac
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup dart
+        uses: DanTup/gh-actions/setup-dart@master
+      - name: Build
+        run: dart2native bin/ddns_do.dart -v -o build/${{ matrix.output-name }}
+      - name: Upload assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }} 
+          asset_path: buils/${{ matrix.output-name }}
+          asset_name: ${{ matrix.output-name }}
+          asset_content_type: application/octet-stream
+        
