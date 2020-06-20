@@ -48,6 +48,8 @@ jobs:
         run: pub get
       - name: Build
         run: dart2native bin/ddns_do.dart -v -o build/${{ matrix.output-name }}
+      - name: ls
+        run: ls -la
       - name: Upload assets
         uses: actions/upload-release-asset@v1
         env:
