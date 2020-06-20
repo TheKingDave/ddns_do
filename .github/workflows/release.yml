@@ -44,6 +44,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup dart
         uses: DanTup/gh-actions/setup-dart@master
+      - name: Pub get
+        run: pub get
       - name: Build
         run: dart2native bin/ddns_do.dart -v -o build/${{ matrix.output-name }}
       - name: Upload assets
