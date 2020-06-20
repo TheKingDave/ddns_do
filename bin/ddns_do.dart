@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:ddns_do/user.dart';
 import 'package:dotenv/dotenv.dart' show load, env;
 
 import 'package:ddns_do/httpError.dart';
@@ -16,7 +17,6 @@ Future main(List<String> arguments) async {
 
   final contents = await confFile.readAsString();
   final config = Config.fromMap(loadYaml(contents));
-  print(config);
 
   final listUri =
       Uri.parse('https://publicsuffix.org/list/public_suffix_list.dat');
@@ -27,6 +27,12 @@ Future main(List<String> arguments) async {
   if (config.doAuthToken == null || config.doAuthToken.isEmpty) {
     print('Could not find env variable ${config.doAuthTokenEnv}');
   }
+
+  // Load ddns file
+  final ddnsFile = File(config.ddns_file);
+  final lines = await ddnsFile.readAsLines();
+  config.domainMap = Map.fromIterable(lines.map((e) => User.fromString(e)),
+      key: (e) => e.domain);
 
   final server = await HttpServer.bind(config.host, config.port);
 
@@ -43,8 +49,6 @@ Future main(List<String> arguments) async {
         ..statusCode = e.statusCode
         ..write(e.message);
       await request.response.close();
-    } catch (e) {
-      print(e.toString());
     }
   }
 }

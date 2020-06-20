@@ -25,11 +25,14 @@ class DDNS {
     var ip = params[config.query.ip] ?? remoteIp;
     
     if(domain == null || domain.isEmpty) {
-      throw HttpError('Domain and ip are needed parameters', 400);
+      throw HttpError('Domain parameter is needed', 400);
     }
-
-    print('Request $remoteIp $params');
     
+    final domainUser = config.domainMap[domain];
+    if(domainUser == null) throw HttpError.unauthorized;
+    if(domainUser.user != user) throw HttpError.unauthorized;
+    if(!domainUser.checkPassword(password)) throw HttpError.unauthorized;
+
     // Check if ips are different, check prioritization
     if(ip != remoteIp) {
       if(prioritize != 'sent') {

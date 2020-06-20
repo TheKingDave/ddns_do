@@ -1,15 +1,17 @@
+import 'package:ddns_do/user.dart';
 import 'package:yaml/yaml.dart';
 
 class Config {
   final String dotenv;
   final String host;
   final int port;
-  String doAuthToken;
   final String doAuthTokenEnv;
   final int ttl;
   final String ddns_file;
   final String default_prioritize;
   final _Query query;
+  String doAuthToken;
+  Map<String, User> domainMap;
 
   Config(
       {this.dotenv,
@@ -27,7 +29,7 @@ class Config {
     return Config(
         dotenv: map['dotenv'] ?? '.env',
         host: map['host'] ?? '127.0.0.1',
-        port: map['port'] ?? 4040,
+        port: map['port'] ?? 80,
         doAuthTokenEnv: map['doAuthTokenEnv'] ?? 'DO_AUTH_TOKEN',
         ttl: map['ttl'] ?? 60,
         ddns_file: map['ddns_file'] ?? 'ddns',

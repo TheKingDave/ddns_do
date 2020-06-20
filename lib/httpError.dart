@@ -1,6 +1,11 @@
+import 'dart:io';
+
 class HttpError implements Exception {
   final int statusCode;
   final String message;
 
-  HttpError(this.message, [this.statusCode=400]);
+  const HttpError(this.message, [this.statusCode = HttpStatus.notFound]);
+
+  static const HttpError unauthorized =
+      HttpError('Unauthorized', HttpStatus.unauthorized);
 }
