@@ -1,4 +1,4 @@
-import 'package:ddns_do/user.dart';
+import 'user.dart';
 import 'package:yaml/yaml.dart';
 
 class Config {

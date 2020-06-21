@@ -8,7 +8,7 @@ class User {
   User({this.domain, this.user, this.password});
 
   factory User.fromString(String text) {
-    final split = text.split(':');
+    final split = text.trim().split(':');
     if (split.length != 3) {
       throw ArgumentError(
           'String must be splittable into 3 parts separated by ":"');
@@ -22,5 +22,10 @@ class User {
 
   bool checkPassword(String password) {
     return DBCrypt().checkpw(password, this.password);
+  }
+
+  @override
+  String toString() {
+    return 'User{domain: $domain, user: $user, password: $password}';
   }
 }
