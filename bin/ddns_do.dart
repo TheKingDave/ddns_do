@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:args/args.dart';
 import 'package:ddns_do/ddns_file.dart';
 import 'package:dotenv/dotenv.dart' show load, env;
 
@@ -10,10 +11,28 @@ import 'package:public_suffix/public_suffix_io.dart';
 import 'package:yaml/yaml.dart';
 
 Future main(List<String> arguments) async {
-  final confFile = File('config.yaml');
+  final parser = ArgParser();
+  parser.addOption('config-file',
+      abbr: 'c',
+      defaultsTo: './config.yaml',
+      help: 'Defines which file to load',
+      valueHelp: 'path');
+  parser.addFlag('help',
+      abbr: 'h',
+      help: 'Shows usage and exists',
+      negatable: false,
+      defaultsTo: false);
+
+  final parseResults = parser.parse(arguments);
+  if (parseResults['help']) {
+    print(parser.usage);
+    exit(0);
+  }
+  
+  final confFile = File(parseResults['config-file']);
 
   if (!await confFile.exists()) {
-    return print('Could not read config file');
+    return print('Could not read config file ${confFile.path}');
   }
 
   final contents = await confFile.readAsString();
