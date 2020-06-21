@@ -14,6 +14,11 @@ ddns_file: ddns
 # Default prioritization for sent or remote ip
 default_prioritize: sent
 
+suffixList:
+  # Mutually exclusive
+  # file: ./suffix.data
+  url: https://publicsuffix.org/list/public_suffix_list.dat
+
 # HTTP query parameter mapping
 query:
   ip: ipaddr
