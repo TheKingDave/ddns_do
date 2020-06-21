@@ -59,7 +59,7 @@ Future main(List<String> arguments) async {
   // Load ddns file
   try {
     config.domainMap = await DdnsFile(config.ddns_file).readFile();
-  } on Exception catch(e) {
+  } on Exception catch (e) {
     print(e);
     exit(2);
   }
@@ -67,8 +67,8 @@ Future main(List<String> arguments) async {
   HttpServer server;
   try {
     server = await HttpServer.bind(config.host, config.port);
-  } on SocketException catch(e) {
-    print(e);
+  } on SocketException {
+    print('Could not bind to port ${config.host}:${config.port}');
     exit(3);
   }
 
@@ -84,6 +84,12 @@ Future main(List<String> arguments) async {
         ..headers.add(HttpHeaders.contentTypeHeader, 'text/plain')
         ..statusCode = e.statusCode
         ..write(e.message);
+      await request.response.close();
+    } catch (e) {
+      request.response
+        ..headers.add(HttpHeaders.contentTypeHeader, 'text/plain')
+        ..statusCode = 500
+        ..write('Serve error');
       await request.response.close();
     }
   }
