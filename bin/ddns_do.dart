@@ -3,7 +3,6 @@ import 'package:args/args.dart';
 import 'package:ddns_do/ddns_file.dart';
 import 'package:dotenv/dotenv.dart' show load, env;
 
-import 'package:ddns_do/user.dart';
 import 'package:ddns_do/httpError.dart';
 import 'package:ddns_do/config.dart';
 import 'package:ddns_do/ddns_do.dart';
@@ -17,6 +16,10 @@ Future main(List<String> arguments) async {
       defaultsTo: './config.yaml',
       help: 'Defines which file to load',
       valueHelp: 'path');
+  parser.addOption('ddns-file',
+      abbr: 'd',
+      help: 'If set overides DDNS-file specified in config',
+      valueHelp: 'path');
   parser.addFlag('help',
       abbr: 'h',
       help: 'Shows usage and exists',
@@ -25,10 +28,11 @@ Future main(List<String> arguments) async {
 
   final parseResults = parser.parse(arguments);
   if (parseResults['help']) {
+    print('DynamicDNS server for DigitalOcean\n');
     print(parser.usage);
     exit(0);
   }
-  
+
   final confFile = File(parseResults['config-file']);
 
   if (!await confFile.exists()) {
@@ -37,6 +41,9 @@ Future main(List<String> arguments) async {
 
   final contents = await confFile.readAsString();
   final config = Config.fromMap(loadYaml(contents));
+  if (parseResults['ddns-file'] != null) {
+    config.ddns_file = parseResults['ddns-file'];
+  }
 
   final listUri =
       Uri.parse('https://publicsuffix.org/list/public_suffix_list.dat');
@@ -45,17 +52,29 @@ Future main(List<String> arguments) async {
   load(config.dotenv);
   config.doAuthToken = env[config.doAuthTokenEnv];
   if (config.doAuthToken == null || config.doAuthToken.isEmpty) {
-    print('Could not find env variable ${config.doAuthTokenEnv}');
+    print('Could not find environment variable ${config.doAuthTokenEnv}');
+    exit(1);
   }
 
   // Load ddns file
-  config.domainMap = await DdnsFile(config.ddns_file).readFile();
+  try {
+    config.domainMap = await DdnsFile(config.ddns_file).readFile();
+  } on Exception catch(e) {
+    print(e);
+    exit(2);
+  }
 
-  final server = await HttpServer.bind(config.host, config.port);
+  HttpServer server;
+  try {
+    server = await HttpServer.bind(config.host, config.port);
+  } on SocketException catch(e) {
+    print(e);
+    exit(3);
+  }
 
   final ddns = DDNS(config);
 
-  print('Server listening on ${config.host}:${config.port}');
+  print('Server listening on ${server.address.host}:${server.port}');
 
   await for (var request in server) {
     try {

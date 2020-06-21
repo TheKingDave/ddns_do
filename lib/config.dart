@@ -7,7 +7,7 @@ class Config {
   final int port;
   final String doAuthTokenEnv;
   final int ttl;
-  final String ddns_file;
+  String ddns_file;
   final String default_prioritize;
   final _Query query;
   String doAuthToken;

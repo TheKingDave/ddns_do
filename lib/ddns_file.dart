@@ -9,6 +9,10 @@ class DdnsFile {
   DdnsFile(this.path);
 
   Future<Map<String, User>> readFile() async {
+    final ddnsFile = File(path);
+    if(!await ddnsFile.exists()) {
+      throw Exception('Could not find ddns file "$path"');
+    }
     return Map.fromIterable(
         await File(path)
             .openRead()
