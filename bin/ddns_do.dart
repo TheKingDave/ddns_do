@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:ddns_do/ddns_file.dart';
 import 'package:dotenv/dotenv.dart' show load, env;
 
 import 'package:ddns_do/user.dart';
@@ -29,10 +30,7 @@ Future main(List<String> arguments) async {
   }
 
   // Load ddns file
-  final ddnsFile = File(config.ddns_file);
-  final lines = await ddnsFile.readAsLines();
-  config.domainMap = Map.fromIterable(lines.map((e) => User.fromString(e)),
-      key: (e) => e.domain);
+  config.domainMap = await DdnsFile(config.ddns_file).readFile();
 
   final server = await HttpServer.bind(config.host, config.port);
 
