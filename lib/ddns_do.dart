@@ -28,7 +28,7 @@ class DDNS {
 
     if (!params.containsAllKeys(requiredFields)) {
       throw HttpError(
-          'Not all required parameters where set ${requiredFields}');
+          'Not all required GET parameters where set ${requiredFields}');
     }
 
     final remoteIp = request.connectionInfo.remoteAddress.address;
