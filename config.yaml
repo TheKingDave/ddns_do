@@ -19,5 +19,5 @@ query:
   ip: ipaddr
   domain: domain
   user: user
-  password: pw 
+  password: password 
   prioritize: prioritize
