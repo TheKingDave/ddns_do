@@ -48,9 +48,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          tags: "latest"
-          tag_semver: true
-
+          tags: "latest,${{ env.RELEASE_VERSION }}"
+          
   build:
     runs-on: ${{ matrix.os }}
     needs: release
