@@ -1,6 +1,6 @@
 name: ddns_do
 description: A sample command-line application.
-version: ${version}
+version: %%version%%
 homepage: https://github.com/TheKingDave/ddns_do
 
 environment:

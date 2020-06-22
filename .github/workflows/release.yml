@@ -9,7 +9,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
-    
+
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
 
@@ -20,14 +20,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }} 
+          release_name: Release ${{ github.ref }}
           draft: true
           prerelease: false
-  
+
   docker:
     runs-on: ubuntu-latest
     needs: release
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -35,11 +35,12 @@ jobs:
         id: get_version
         run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
       - name: Replace version
-        uses: jacobtomlinson/gha-find-replace@master
+        uses: BjornLuG/substitute-string-action@v1
         with:
-          find: "${version}"
-          replace: ${{ env.RELEASE_VERSION }}
-          include: pubspec.yaml
+          _input-file: './pubspec.yaml'
+          _output-file: './pubspec.yaml'
+          _format-key: '%%key%%'
+          version: ${{ env.RELEASE_VERSION }}
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
@@ -49,11 +50,11 @@ jobs:
           registry: docker.pkg.github.com
           tags: "latest"
           tag_semver: true
-  
+
   build:
     runs-on: ${{ matrix.os }}
     needs: release
-    
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
@@ -64,7 +65,7 @@ jobs:
             output-name: ddns-do-windows.exe
           - os: macOS-latest
             output-name: ddns-do-mac
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -72,11 +73,12 @@ jobs:
         id: get_version
         run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
       - name: Replace version
-        uses: jacobtomlinson/gha-find-replace@master
+        uses: BjornLuG/substitute-string-action@v1
         with:
-          find: "${version}"
-          replace: ${{ env.RELEASE_VERSION }}
-          include: pubspec.yaml
+          _input-file: './pubspec.yaml'
+          _output-file: './pubspec.yaml'
+          _format-key: '%%key%%'
+          version: ${{ env.RELEASE_VERSION }}
       - name: Setup dart
         uses: DanTup/gh-actions/setup-dart@master
       - name: Pub get
@@ -88,7 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.release.outputs.upload_url }} 
+          upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: bin/${{ matrix.output-name }}
           asset_name: ${{ matrix.output-name }}
           asset_content_type: application/octet-stream
