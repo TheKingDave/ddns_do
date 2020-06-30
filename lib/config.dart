@@ -3,6 +3,7 @@ import 'package:yaml/yaml.dart';
 
 class Config {
   final String dotenv;
+  final Uri listUri;
   final String host;
   final int port;
   final String doAuthTokenEnv;
@@ -15,6 +16,7 @@ class Config {
 
   Config(
       {this.dotenv,
+      this.listUri,
       this.host,
       this.port,
       this.doAuthToken,
@@ -28,12 +30,13 @@ class Config {
     map = map ?? YamlMap();
     return Config(
         dotenv: map['dotenv'] ?? '.env',
+        listUri: map['suffixList'] != null ? Uri.parse(map['suffixList']) : Uri.parse('https://publicsuffix.org/list/public_suffix_list.dat'),
         host: map['host'] ?? '127.0.0.1',
         port: map['port'] ?? 80,
         doAuthTokenEnv: map['doAuthTokenEnv'] ?? 'DO_AUTH_TOKEN',
         ttl: map['ttl'] ?? 60,
         ddns_file: map['ddns_file'] ?? 'ddns',
-        default_prioritize: map['default_prioritize'] ?? 'sent',
+        default_prioritize: (map['default_prioritize']?.toString() ?? 'sent').toLowerCase(),
         query: _Query.fromMap(map['query']));
   }
 

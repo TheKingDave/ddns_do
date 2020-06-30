@@ -39,16 +39,20 @@ jobs:
         with:
           _input-file: './pubspec.yaml'
           _output-file: './pubspec.yaml'
-          _format-key: '%%key%%'
-          version: ${{ env.RELEASE_VERSION }}
+          "version: 1.0.0": "version: ${{ env.RELEASE_VERSION }}"
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: thekingdave/ddns_do/ddns_do
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
+          name: thekingdave/ddns_do
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
           tags: "latest,${{ env.RELEASE_VERSION }}"
+      - name: Update Hub Description
+        uses: peter-evans/dockerhub-description@v2
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+          DOCKERHUB_REPOSITORY: thekingdave/ddns_do
           
   build:
     runs-on: ${{ matrix.os }}
@@ -76,8 +80,7 @@ jobs:
         with:
           _input-file: './pubspec.yaml'
           _output-file: './pubspec.yaml'
-          _format-key: '%%key%%'
-          version: ${{ env.RELEASE_VERSION }}
+          "version: 1.0.0": "version: ${{ env.RELEASE_VERSION }}"
       - name: Setup dart
         uses: DanTup/gh-actions/setup-dart@master
       - name: Pub get

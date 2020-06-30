@@ -45,6 +45,8 @@ Future main(List<String> arguments) async {
     config.ddns_file = parseResults['ddns-file'];
   }
 
+  
+  
   final listUri =
       Uri.parse('https://publicsuffix.org/list/public_suffix_list.dat');
   await SuffixRulesHelper.initFromUri(listUri);

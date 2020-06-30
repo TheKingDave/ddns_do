@@ -27,9 +27,12 @@ COPY --from=dart-runtime /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux
 COPY --from=dart-runtime /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so.2
 COPY --from=dart-runtime /lib/x86_64-linux-gnu/librt.so.1 /lib/x86_64-linux-gnu/librt.so.1
 
+COPY ./example/* /etc/ddns_do/
+ADD https://publicsuffix.org/list/public_suffix_list.dat /etc/ddns_do/suffix.dat
+
 # Copy generated library
 COPY --from=dart-runtime /app/bin/ddns_do_linux /app/bin/ddns_do_linux
 
-ENTRYPOINT ["/app/bin/ddns_do_linux", "-c", "/etc/ddns/config.yaml"]
+ENTRYPOINT ["/app/bin/ddns_do_linux", "-c", "/etc/ddns_do/config.yaml"]
 
 EXPOSE 80

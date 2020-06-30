@@ -53,7 +53,10 @@ class DDNS {
 
     // Check if ips are different, check prioritization
     if (ip != remoteIp) {
-      if (prioritize != 'sent') {
+      if(prioritize == 'error') {
+        throw HttpError('Sent ip and remote ip do not match', 400);
+      }
+      if (prioritize == 'remote') {
         ip = remoteIp;
       }
     }
