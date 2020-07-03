@@ -12,15 +12,30 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.gitversion.outputs.FullSemVer }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Fetch tags for GitVersion
+        run: git fetch --tags
+
+      - name: Fetch master for GitVersion
+        if: github.ref != 'refs/heads/master'
+        run: git branch --create-reflog master origin/master
+
+      - name: GitVersion
+        id: gitversion
+        uses: roryprimrose/rungitversion@v1.0.0
+
       - id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ steps.gitversion.outputs.FullSemVer }}
           draft: true
           prerelease: false
 
@@ -31,29 +46,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get release version
-        id: get_version
-        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
       - name: Replace version
         uses: BjornLuG/substitute-string-action@v1
         with:
           _input-file: './pubspec.yaml'
           _output-file: './pubspec.yaml'
-          "version: 1.0.0": "version: ${{ env.RELEASE_VERSION }}"
+          "version: 1.0.0": "version: ${{ needs.release.outputs.version }}"
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: thekingdave/ddns_do
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-          tags: "latest,${{ env.RELEASE_VERSION }}"
+          tags: "latest,${{ needs.release.outputs.version }}"
       - name: Update Hub Description
         uses: peter-evans/dockerhub-description@v2
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
           DOCKERHUB_REPOSITORY: thekingdave/ddns_do
-          
+
   build:
     runs-on: ${{ matrix.os }}
     needs: release
@@ -72,15 +84,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Get release version
-        id: get_version
-        run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
       - name: Replace version
         uses: BjornLuG/substitute-string-action@v1
         with:
           _input-file: './pubspec.yaml'
           _output-file: './pubspec.yaml'
-          "version: 1.0.0": "version: ${{ env.RELEASE_VERSION }}"
+          "version: 1.0.0": "version: ${{ needs.release.outputs.version }}"
       - name: Setup dart
         uses: DanTup/gh-actions/setup-dart@master
       - name: Pub get
@@ -96,4 +105,3 @@ jobs:
           asset_path: bin/${{ matrix.output-name }}
           asset_name: ${{ matrix.output-name }}
           asset_content_type: application/octet-stream
-        
