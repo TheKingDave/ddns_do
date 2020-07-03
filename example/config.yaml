@@ -17,15 +17,14 @@ ddns_file: /etc/ddns_do/ddns
 default_prioritize: sent
 
 # Url or Path for suffix_list
-# gets download in docker build
-suffixList: /etc/ddns_do/suffix.dat
 # If a url, it downloads the list on startup
-# suffixList: https://publicsuffix.org/list/public_suffix_list.dat
+suffixList: https://publicsuffix.org/list/public_suffix_list.dat
+# suffixList: /etc/ddns_do/suffix.dat
 
 # HTTP query parameter mapping
 query:
   ip: ip
   domain: domain
   user: user
-  password: password 
+  password: password
   prioritize: prioritize

@@ -28,7 +28,6 @@ COPY --from=dart-runtime /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/
 COPY --from=dart-runtime /lib/x86_64-linux-gnu/librt.so.1 /lib/x86_64-linux-gnu/librt.so.1
 
 COPY ./example/* /etc/ddns_do/
-ADD https://publicsuffix.org/list/public_suffix_list.dat /etc/ddns_do/suffix.dat
 
 # Copy generated library
 COPY --from=dart-runtime /app/bin/ddns_do_linux /app/bin/ddns_do_linux
