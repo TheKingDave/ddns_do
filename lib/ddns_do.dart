@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:ddns_do/logger.dart';
+
 import 'digitalOcean.dart';
 import 'httpError.dart';
 import 'config.dart';
 import 'mapExt.dart';
 
 class DDNS {
+  final Logger logger = Logger();
   final Config config;
   final DigitalOcean _do;
   final List<String> requiredFields;
@@ -23,6 +26,8 @@ class DDNS {
       throw HttpError('Unsupported method: ${request.method}',
           HttpStatus.methodNotAllowed);
     }
+    
+    logger.d(request.headers);
 
     final params = request.uri.queryParameters;
 
