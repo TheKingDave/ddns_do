@@ -11,6 +11,7 @@ class Config {
   final String doAuthTokenEnv;
   final int ttl;
   String ddns_file;
+  final ipHeader;
   final String default_prioritize;
   final _Query query;
   String doAuthToken;
@@ -25,6 +26,7 @@ class Config {
     this.doAuthTokenEnv,
     this.ttl,
     this.ddns_file,
+    this.ipHeader,
     this.default_prioritize,
     this.query,
   });
@@ -44,6 +46,7 @@ class Config {
         doAuthTokenEnv: map['doAuthTokenEnv'] ?? 'DO_AUTH_TOKEN',
         ttl: map['ttl'] ?? 60,
         ddns_file: map['ddns_file'] ?? 'ddns',
+        ipHeader: map['ipHeader'],
         default_prioritize:
             (map['default_prioritize']?.toString() ?? 'sent').toLowerCase(),
         query: _Query.fromMap(map['query']));

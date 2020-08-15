@@ -29,6 +29,11 @@ class DDNS {
     
     logger.d(request.headers);
 
+    if(config.ipHeader != null && request.headers[config.ipHeader] == null) {
+      logger.e('IpHeader "${config.ipHeader}" was not set on request');
+      throw HttpError.internalServerError;
+    }
+
     final params = request.uri.queryParameters;
 
     if (!params.containsAllKeys(requiredFields)) {
@@ -43,6 +48,10 @@ class DDNS {
     final domain = params[config.query.domain];
     final user = params[config.query.user];
     final password = params[config.query.password];
+    
+    if(config.ipHeader != null) {
+      ip = request.headers[config.ipHeader].first;
+    }
 
     if (domain == null || domain.isEmpty) {
       throw HttpError('Domain parameter is needed');

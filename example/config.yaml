@@ -12,6 +12,8 @@ ttl: 60
 # File to load for ddns data
 #ddns_file: /etc/ddns_do/ddns
 ddns_file: ddns
+# Use header instead of actual ip (if used behind a proxy9
+ipHeader: X-Forwarded-For
 
 logger:
   # Log level: Debug, Verbose, Info, Error
