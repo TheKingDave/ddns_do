@@ -27,18 +27,13 @@ jobs:
         with:
           _input-file: './pubspec.yaml'
           _output-file: './pubspec.yaml'
-          "version: 1.0.0": "version: ${{ needs.release.outputs.version }}"
+          "version: 1.0.0": "version: ${{ steps.gitversion.outputs.FullSemVer }}"
       
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: thekingdave/ddns_do
+          name: thekingdave/ddns_do_dev
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-          tags: "${{ steps.gitversion.outputs.PreReleaseTagWithDash }}"
-      - name: Update Hub Description
-        uses: peter-evans/dockerhub-description@v2
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-          DOCKERHUB_REPOSITORY: thekingdave/ddns_do
+          tags: "${{ steps.gitversion.outputs.FullSemVer }}"
+          
