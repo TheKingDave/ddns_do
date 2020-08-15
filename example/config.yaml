@@ -12,7 +12,7 @@ ttl: 60
 # File to load for ddns data
 #ddns_file: /etc/ddns_do/ddns
 ddns_file: ddns
-# Use header instead of actual ip (if used behind a proxy9
+# Use header instead of actual ip (if used behind a proxy)
 ipHeader: X-Forwarded-For
 
 logger:
@@ -33,9 +33,9 @@ default_prioritize: sent
 # If a url, it downloads the list on startup
 suffixList: https://publicsuffix.org/list/public_suffix_list.dat
 # Linux file:
-# suffixList: /etc/ddns_do/suffix.dat
+# suffixList: /etc/ddns_do/public_suffix_list.dat
 # Windows file:
-# suffixList: file:///D:/data_local/private/ddns_do/example/public_suffix_list.dat
+# suffixList: file:///D:/ddns_do/example/public_suffix_list.dat
 
 # HTTP query parameter mapping
 query:

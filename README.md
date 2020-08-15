@@ -59,6 +59,10 @@ query:
 ### Run the server
 Prerequisite: an DigitalOcean api token. You kan generate one [here](https://cloud.digitalocean.com/account/api/tokens).
 
+### Example configuration for [FritzBox](https://at.avm.de/produkte/fritzbox/)
+```text
+https://ddns.service/?ip=<ipaddr>&domain=<domain>&user=<username>&password=<pass>
+```
 
 #### Docker
 Example docker run command
