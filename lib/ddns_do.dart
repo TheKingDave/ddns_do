@@ -75,13 +75,13 @@ class DDNS {
       }
     }
 
-    var status = HttpError.ok;
+    var status = HttpError('Unchanged', 200);
     
     final idIp = await _do.getRecord(domain);
     if (idIp == null) {
       // If no record, create one
       await _do.createRecord(domain, ip);
-      status = HttpError.created;
+      status = HttpError('Created', 200);
     } else if (idIp.ip != ip) {
       // If ip is different update record
       await _do.updateRecord(domain, idIp.copyWith(ip: ip));
