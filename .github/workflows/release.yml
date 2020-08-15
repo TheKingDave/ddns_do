@@ -12,7 +12,8 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version: ${{ steps.gitversion.outputs.FullSemVer }}
+      fullVersion: ${{ steps.gitversion.outputs.FullSemVer }}
+      version: ${{ steps.gitversion.outputs.SemVer }}
 
     steps:
       - name: Checkout
@@ -51,7 +52,7 @@ jobs:
         with:
           _input-file: './pubspec.yaml'
           _output-file: './pubspec.yaml'
-          "version: 1.0.0": "version: ${{ needs.release.outputs.version }}"
+          "version: 1.0.0": "version: ${{ needs.release.outputs.fullVersion }}"
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
