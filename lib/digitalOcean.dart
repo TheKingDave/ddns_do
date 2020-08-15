@@ -5,6 +5,7 @@ import 'package:public_suffix/public_suffix.dart';
 
 import 'config.dart';
 import 'httpError.dart';
+import 'logger.dart';
 
 const String _baseUrl = 'https://api.digitalocean.com/v2/domains/';
 
@@ -88,7 +89,7 @@ class DigitalOcean {
     });
 
     if (resp.statusCode != HttpStatus.created) {
-      config.logger.e('Could not create DNS record', '${resp.statusCode} ${resp.body}');
+      Logger().e('Could not create DNS record ${resp.statusCode} ${resp.body}');
       throw HttpError('Could not create DNS record', 500);
     }
 

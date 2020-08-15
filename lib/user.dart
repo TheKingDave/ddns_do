@@ -1,4 +1,5 @@
 import 'package:dbcrypt/dbcrypt.dart';
+import 'package:ddns_do/logger.dart';
 
 class User {
   final String domain;
@@ -21,10 +22,11 @@ class User {
   }
 
   bool checkPassword(String password) {
-    print(password);
-    print(password.runtimeType);
-    print(this.password);
-    print(this.password.runtimeType);
+    final logger = Logger();
+    logger.d(password);
+    logger.d(password.runtimeType);
+    logger.d(this.password);
+    logger.d(this.password.runtimeType);
     return DBCrypt().checkpw(password, this.password);
   }
 

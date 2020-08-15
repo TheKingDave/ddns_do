@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:logger/logger.dart';
+import 'package:ddns_do/logger.dart';
 
 import 'user.dart';
 import 'package:yaml/yaml.dart';
@@ -17,23 +15,24 @@ class Config {
   final _Query query;
   String doAuthToken;
   Map<String, User> domainMap;
-  final Logger logger;
 
-  Config(
-      {this.dotenv,
-      this.listUri,
-      this.host,
-      this.port,
-      this.doAuthToken,
-      this.doAuthTokenEnv,
-      this.ttl,
-      this.ddns_file,
-      this.default_prioritize,
-      this.query,
-      this.logger});
+  Config({
+    this.dotenv,
+    this.listUri,
+    this.host,
+    this.port,
+    this.doAuthToken,
+    this.doAuthTokenEnv,
+    this.ttl,
+    this.ddns_file,
+    this.default_prioritize,
+    this.query,
+  });
 
   factory Config.fromMap(YamlMap map) {
     map = map ?? YamlMap();
+
+    setupLogger(map['logger']);
 
     return Config(
         dotenv: map['dotenv'] ?? '.env',
@@ -47,35 +46,17 @@ class Config {
         ddns_file: map['ddns_file'] ?? 'ddns',
         default_prioritize:
             (map['default_prioritize']?.toString() ?? 'sent').toLowerCase(),
-        query: _Query.fromMap(map['query']),
-        logger: buildLogger(map['logger']));
+        query: _Query.fromMap(map['query']));
   }
-  
-  static Logger buildLogger(YamlMap map) {
-    map = map ?? YamlMap();
-    
-    Logger.level = Level.values.firstWhere((e) =>
-    e.toString().toLowerCase() ==
-        ('Level.' + (map['level'] ?? 'info')).toLowerCase());
 
-    final bool stackTrace = map['stacktrace'] ?? false;
-    
-    final logger = Logger(
-      printer: PrettyPrinter(
-        colors: map['file'] == null,
-        errorMethodCount: 8,
-        methodCount: stackTrace ? 2 : 0,
-        printTime: map['timestamp'],
-      ),
-      output: ConsoleOutput(),
-    );
-    
-    return logger;
-  }
-  
-  @override
-  String toString() {
-    return 'Config{dotenv: $dotenv, host: $host, port: $port, doAuthToken: $doAuthToken, doAuthTokenEnv: $doAuthTokenEnv, ttl: $ttl, ddns_file: $ddns_file, query: $query}';
+  static void setupLogger(YamlMap map) {
+    map = map ?? YamlMap();
+    final logger = Logger();
+
+    logger.logLevel = LogLevel.fromString(map['level'] ?? 'error');
+    logger.printStackTraceOnError = map['stacktrace'] ?? false;
+    logger.printTimestamp = map['timestamp'] ?? false;
+    logger.printColors = map['color'] ?? false;
   }
 }
 

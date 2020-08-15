@@ -10,13 +10,16 @@ doAuthTokenEnv: DO_AUTH_TOKEN
 # TTL for domain entries
 ttl: 60
 # File to load for ddns data
-ddns_file: /etc/ddns_do/ddns
+#ddns_file: /etc/ddns_do/ddns
+ddns_file: ddns
 
 logger:
-  # Log level: Verbose, Debug, Info, Warning, Error, WTF (case insensitive)
-  level: verbose
+  # Log level: Debug, Verbose, Info, Error
+  level: debug
+  # Log with colors
+  color: true
   # Log stacktrace on non errors
-  stacktrace: false
+  stacktrace: true
   # Log timestamps
   timestamp: false
 
