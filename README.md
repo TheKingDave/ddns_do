@@ -73,7 +73,7 @@ services:
   ddns:
     image: thekingdave/ddns_do
     container_name: ddns
-    env_file: .env
+    env_file: example/.env
     ports:
     - '4040:80'
     volumes:

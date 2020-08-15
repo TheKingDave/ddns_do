@@ -21,6 +21,10 @@ class User {
   }
 
   bool checkPassword(String password) {
+    print(password);
+    print(password.runtimeType);
+    print(this.password);
+    print(this.password.runtimeType);
     return DBCrypt().checkpw(password, this.password);
   }
 

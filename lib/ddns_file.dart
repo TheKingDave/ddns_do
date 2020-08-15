@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'mException.dart';
+
 import 'user.dart';
 
 class DdnsFile {
@@ -10,8 +12,8 @@ class DdnsFile {
 
   Future<Map<String, User>> readFile() async {
     final ddnsFile = File(path);
-    if(!await ddnsFile.exists()) {
-      throw Exception('Could not find ddns file "$path"');
+    if (!await ddnsFile.exists()) {
+      throw MException('Could not find ddns file "$path"');
     }
     return Map.fromIterable(
         await File(path)

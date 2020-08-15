@@ -36,63 +36,77 @@ Future main(List<String> arguments) async {
   final confFile = File(parseResults['config-file']);
 
   if (!await confFile.exists()) {
-    return print('Could not read config file ${confFile.path}');
+    print('Could not read config file ${confFile.path}');
+    exit(1);
   }
 
   final contents = await confFile.readAsString();
   final config = Config.fromMap(loadYaml(contents));
+  
   if (parseResults['ddns-file'] != null) {
     config.ddns_file = parseResults['ddns-file'];
   }
-
   
-  
-  final listUri =
-      Uri.parse('https://publicsuffix.org/list/public_suffix_list.dat');
-  await SuffixRulesHelper.initFromUri(listUri);
+  try {
+    await SuffixRulesHelper.initFromUri(config.listUri);
+  } catch(e) {
+    config.logger.e('Could not load suffix list from ${config.listUri.toString()}', e);
+    exit(2);
+  }
 
   load(config.dotenv);
   config.doAuthToken = env[config.doAuthTokenEnv];
   if (config.doAuthToken == null || config.doAuthToken.isEmpty) {
-    print('Could not find environment variable ${config.doAuthTokenEnv}');
-    exit(1);
+    config.logger.e('Could not find environment variable ${config.doAuthTokenEnv}');
+    config.logger.close();
+    exit(3);
   }
 
   // Load ddns file
   try {
     config.domainMap = await DdnsFile(config.ddns_file).readFile();
   } on Exception catch (e) {
-    print(e);
-    exit(2);
+    config.logger.e(e);
+    config.logger.close();
+    exit(4);
   }
 
   HttpServer server;
   try {
     server = await HttpServer.bind(config.host, config.port);
   } on SocketException {
-    print('Could not bind to port ${config.host}:${config.port}');
-    exit(3);
+    config.logger.e('Could not bind to port ${config.host}:${config.port}');
+    exit(5);
   }
 
   final ddns = DDNS(config);
 
-  print('Server listening on ${server.address.host}:${server.port}');
+  config.logger.i('Server listening on ${server.address.host}:${server.port}');
 
   await for (var request in server) {
     try {
+      config.logger.v(Map.from(request.uri.queryParameters)..[config.query.password] = '<hidden>');
       await ddns.handleRequest(request);
     } on HttpError catch (e) {
-      request.response
-        ..headers.add(HttpHeaders.contentTypeHeader, 'text/plain')
-        ..statusCode = e.statusCode
-        ..write(e.message);
+      if(e.statusCode >= 400) {
+        config.logger.e('Error on request: ${e.toString()}', e);
+      } else {
+        config.logger.v(e.toString());
+      }
+      await sendError(request, e.message, e.statusCode);
       await request.response.close();
     } catch (e) {
-      request.response
-        ..headers.add(HttpHeaders.contentTypeHeader, 'text/plain')
-        ..statusCode = 500
-        ..write('Serve error');
+      config.logger.e('Error on request', e);
+      await sendError(request);
       await request.response.close();
     }
   }
+}
+
+void sendError(HttpRequest request, [String message='Server Error', int statusCode=500]) async {
+  request.response
+    ..headers.add(HttpHeaders.contentTypeHeader, 'text/plain')
+    ..statusCode = statusCode
+    ..write(message);
+  await request.response.close();
 }

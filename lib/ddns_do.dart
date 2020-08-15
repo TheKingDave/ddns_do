@@ -28,7 +28,7 @@ class DDNS {
 
     if (!params.containsAllKeys(requiredFields)) {
       throw HttpError(
-          'Not all required GET parameters where set ${requiredFields}');
+          'Not all required GET parameters set. Required fields: ${requiredFields}');
     }
 
     final remoteIp = request.connectionInfo.remoteAddress.address;
@@ -61,16 +61,20 @@ class DDNS {
       }
     }
 
-    // TODO: Cache in future?
+    var status = HttpError.ok;
+    
     final idIp = await _do.getRecord(domain);
     if (idIp == null) {
       // If no record, create one
       await _do.createRecord(domain, ip);
+      status = HttpError.created;
     } else if (idIp.ip != ip) {
       // If ip is different update record
       await _do.updateRecord(domain, idIp.copyWith(ip: ip));
+      status = HttpError('Updated', 208);
     }
+    // If ip is present and is equal don't change
 
-    throw HttpError('Ok', 200);
+    throw status;
   }
 }

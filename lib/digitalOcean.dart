@@ -78,14 +78,17 @@ class DigitalOcean {
     final url = '$_baseUrl${suffix.domain}/records';
     final body = {
       'type': 'A',
-      'name': suffix.root,
+      'name': suffix.subdomain,
       'data': ip,
-      'ttl': config.ttl
+      'ttl': config.ttl,
     };
 
-    final resp = await client.post(url, body: body);
+    final resp = await client.post(url, body: json.encode(body), headers: {
+      HttpHeaders.contentTypeHeader: ContentType.json.toString(),
+    });
 
     if (resp.statusCode != HttpStatus.created) {
+      config.logger.e('Could not create DNS record', '${resp.statusCode} ${resp.body}');
       throw HttpError('Could not create DNS record', 500);
     }
 
