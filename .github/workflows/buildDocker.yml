@@ -1,0 +1,44 @@
+on: push
+
+name: Build Docker
+
+jobs:
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Fetch tags for GitVersion
+        run: git fetch --tags
+
+      - name: Fetch master for GitVersion
+        if: github.ref != 'refs/heads/master'
+        run: git branch --create-reflog master origin/master
+
+      - name: GitVersion
+        id: gitversion
+        uses: roryprimrose/rungitversion@v1.0.0
+        
+      - name: Replace version
+        uses: BjornLuG/substitute-string-action@v1
+        with:
+          _input-file: './pubspec.yaml'
+          _output-file: './pubspec.yaml'
+          "version: 1.0.0": "version: ${{ needs.release.outputs.version }}"
+      
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: thekingdave/ddns_do
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+          tags: "${{ steps.gitversion.outputs.PreReleaseTagWithDash }}"
+      - name: Update Hub Description
+        uses: peter-evans/dockerhub-description@v2
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_REPOSITORY: thekingdave/ddns_do
