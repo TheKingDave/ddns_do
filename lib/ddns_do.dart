@@ -85,7 +85,7 @@ class DDNS {
     } else if (idIp.ip != ip) {
       // If ip is different update record
       await _do.updateRecord(domain, idIp.copyWith(ip: ip));
-      status = HttpError('Updated', 208);
+      status = HttpError('Updated', 200);
     }
     // If ip is present and is equal don't change
 
