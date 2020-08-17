@@ -2,62 +2,76 @@
 
 This is a small DDNS server that works with DigitalOcean.
 
+### CLI Parameters
 
-#### DDNS file format
-The configuration of which domain can be changed with what username and password is done in the DDNS file
+| Name        | Abbr | Description                                    | Default       |
+| ----------- | ---- | ---------------------------------------------- | ------------- |
+| config-file | c    | Defines which config file to load              | ./config.yaml |
+| ddns-file   | d    | If set overrides DDNS-file specified in config | `null`        |
+| help        | h    | Shows usage and exists                         | `false`       |
 
-The format is very simple and made after the example of the passwd file
+### Configuration
+
+This part describes the configuration file, which is a YAML file. You can find an example with (nearly) all options in the [example folder](https://github.com/TheKingDave/ddns_do/blob/master/example/config.yaml)
+
+| Name                  | Description                                                  | Defaut                                               |
+| --------------------- | ------------------------------------------------------------ | ---------------------------------------------------- |
+| dotenv                | Load dotenv file on startup                                  | `null`                                               |
+| host                  | On which host to listen to. If you want to li                | 127.0.0.1                                            |
+| port                  | Port to listen on                                            | 80                                                   |
+| doAuthTokenEnv        | The DigitalOcean authentication token environment variable   | DO_AUTH_TOKEN                                        |
+| ttl                   | Time to live of the dns records (min 30)                     | 60                                                   |
+| ddns_file             | The file to load the ddns entries from                       | ddns                                                 |
+| ipHeader              | If set gets the ip address from the header instead of the TCP connection | `null`                                               |
+| logger                | Logger configuration ([link](#logger-configuration))         | `null`                                               |
+| defaultPrioritization |                                                              | sent                                                 |
+| suffixList            | Where to load the domain suffix list from                    | https://publicsuffix.org/list/public_suffix_list.dat |
+| query                 | Query parameter configuration ([link](#query-parameter-configuration)) |                                                      |
+
+#### Logger configuration
+
+| Name       | Description                                                  | Default |
+| ---------- | ------------------------------------------------------------ | ------- |
+| level      | Level of logging output [Debug, Verbose, Info, Error], case insensitive | error   |
+| color      | If the log level should be in color                          | `false` |
+| timestamp  | If timestamp should be printed on start of every log         | `false` |
+| stacktrace | If a stacktrace should be printed on errors                  | `false` |
+
+#### Query parameter configuration
+
+| Name       | Description                 |
+| ---------- | --------------------------- |
+| ip         | Sent IP from client         |
+| domain     | Domain to update            |
+| user       | Username for authentication |
+| password   | Password for authentication |
+| prioritize | Which prioritization to use |
+
+### DDNS file format
+
+The configuration of which domain can be changed with what username and password is done in the DDNS file.
+
+The format is very simple and made after the example of the [passwd](https://en.wikipedia.org/wiki/Passwd) file.
 
 The format is as follows: `domain:user:password`.
-The password is hashed with BCrypt. (You can use this 
-[tool](https://www.browserling.com/tools/bcrypt) to hash your password)
 
-Example:
-* domain: test.exmaple.com
-* username: david
-* password: david
+The password is hashed with BCrypt. (You can use this [tool](https://www.browserling.com/tools/bcrypt) to hash your password)
+
+| Part     | Description                        | Example          |
+| -------- | ---------------------------------- | ---------------- |
+| domain   | Domain name                        | test.exmaple.com |
+| username | The username                       | user             |
+| password | The password in hashed bcrypt form | pass (cleartext) |
+
+Composed example:
+
 ```text
-test.example.com:david:$2a$12$E2LB096sHfmOP2zkuKjzE.Ke57Ds1LzNTCl88Ug/JCrdV5lcGw6TS
-```
-
-#### Configuration
-Example configuration with the default values
-```yaml
-# .env file to load
-# if file not found logs warning
-dotenv: .env
-# host to bind to
-host: 0.0.0.0
-# port to listen to
-port: 80
-# env variable to get the do auth token from
-doAuthTokenEnv: DO_AUTH_TOKEN
-# TTL for domain entries
-ttl: 60
-# File to load for ddns data
-ddns_file: /etc/ddns_do/ddns
-
-# Default prioritization for sent or remote ip (sent, remote, error)
-# what ip to use when the sent and remote ip dont match
-default_prioritize: sent
-
-# Url or Path for suffix_list
-# gets download in docker build
-suffixList: /etc/ddns_do/suffix.dat
-# If a url, it downloads the list on startup
-# suffixList: https://publicsuffix.org/list/public_suffix_list.dat
-
-# HTTP query parameter mapping
-query:
-  ip: ip
-  domain: domain
-  user: user
-  password: password 
-  prioritize: prioritize
+test.example.com:user:$2a$12$jt9c5pN1ZURYspcFBjXV/uxn54RKpYv8EjhNExqY7owZyf/GZGzQK
 ```
 
 ### Run the server
-Prerequisite: an DigitalOcean api token. You kan generate one [here](https://cloud.digitalocean.com/account/api/tokens).
+
+Prerequisite: an DigitalOcean API token. You can generate one [here](https://cloud.digitalocean.com/account/api/tokens).
 
 ### Example configuration for [FritzBox](https://at.avm.de/produkte/fritzbox/)
 ```text
@@ -67,7 +81,7 @@ https://ddns.service/?ip=<ipaddr>&domain=<domain>&user=<username>&password=<pass
 #### Docker
 Example docker run command
 ```sh
-docker run --rm --name ddns --env-file ./.env -p 4040:80 -v $(pwd)/tmp/:/etc/ddns thekingdave/ddns_do
+docker run --rm --name ddns --env-file ./.env -p 4040:80 -v $(pwd)/ddns:/var/lib/ddns_do/ddns thekingdave/ddns_do
 ```
 Docker compose:
 ```yaml
@@ -77,12 +91,10 @@ services:
   ddns:
     image: thekingdave/ddns_do
     container_name: ddns
-    env_file: example/.env
-    ports:
-    - '4040:80'
+    env_file: .env
     volumes:
-    - ./config/:/etc/ddns
+      - ./ddns:/var/lib/ddns_do/ddns
+    restart: unless-stopped
 ```
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+

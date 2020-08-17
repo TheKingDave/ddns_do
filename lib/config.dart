@@ -1,4 +1,4 @@
-import 'package:ddns_do/logger.dart';
+import 'logger.dart';
 
 import 'user.dart';
 import 'package:yaml/yaml.dart';
@@ -12,7 +12,7 @@ class Config {
   final int ttl;
   String ddns_file;
   final ipHeader;
-  final String default_prioritize;
+  final String defaultPrioritization;
   final _Query query;
   String doAuthToken;
   Map<String, User> domainMap;
@@ -27,7 +27,7 @@ class Config {
     this.ttl,
     this.ddns_file,
     this.ipHeader,
-    this.default_prioritize,
+    this.defaultPrioritization,
     this.query,
   });
 
@@ -37,7 +37,7 @@ class Config {
     setupLogger(map['logger']);
 
     return Config(
-        dotenv: map['dotenv'] ?? '.env',
+        dotenv: map['dotenv'],
         listUri: map['suffixList'] != null
             ? Uri.parse(map['suffixList'])
             : Uri.parse('https://publicsuffix.org/list/public_suffix_list.dat'),
@@ -47,8 +47,8 @@ class Config {
         ttl: map['ttl'] ?? 60,
         ddns_file: map['ddns_file'] ?? 'ddns',
         ipHeader: map['ipHeader'],
-        default_prioritize:
-            (map['default_prioritize']?.toString() ?? 'sent').toLowerCase(),
+        defaultPrioritization:
+            (map['defaultPrioritization']?.toString() ?? 'sent').toLowerCase(),
         query: _Query.fromMap(map['query']));
   }
 

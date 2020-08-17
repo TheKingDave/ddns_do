@@ -10,6 +10,9 @@ RUN dart2native bin/ddns_do.dart -o bin/ddns_do_linux
 
 FROM scratch
 
+# Create dir vor default DDNS file location
+RUN mkdir -p /var/lib/ddns_do/
+
 # For name-service order configuration, predefined hostnames like "localhost", dns server IPs
 COPY --from=dart-runtime /etc/nsswitch.conf /etc/nsswitch.conf
 COPY --from=dart-runtime /etc/hosts /etc/hosts
@@ -27,11 +30,12 @@ COPY --from=dart-runtime /lib/x86_64-linux-gnu/libpthread.so.0 /lib/x86_64-linux
 COPY --from=dart-runtime /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so.2
 COPY --from=dart-runtime /lib/x86_64-linux-gnu/librt.so.1 /lib/x86_64-linux-gnu/librt.so.1
 
-COPY ./example/* /etc/ddns_do/
+COPY ./docker/* /etc/ddns_do/
 
 # Copy generated library
 COPY --from=dart-runtime /app/bin/ddns_do_linux /app/bin/ddns_do_linux
 
-ENTRYPOINT ["/app/bin/ddns_do_linux", "-c", "/etc/ddns_do/config.yaml"]
+ENTRYPOINT ["/app/bin/ddns_do_linux"]
+CMD ["-c", "/etc/ddns_do/config.yaml"]
 
 EXPOSE 80

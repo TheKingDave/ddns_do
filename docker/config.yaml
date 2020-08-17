@@ -1,0 +1,2 @@
+host: 0.0.0.0
+ddns_file: /var/lib/ddns_do/ddns

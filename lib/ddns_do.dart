@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:ddns_do/logger.dart';
+import 'logger.dart';
 
 import 'digitalOcean.dart';
 import 'httpError.dart';
@@ -43,7 +43,7 @@ class DDNS {
 
     final remoteIp = request.connectionInfo.remoteAddress.address;
     final prioritize =
-        params[config.query.prioritize] ?? config.default_prioritize;
+        params[config.query.prioritize] ?? config.defaultPrioritization;
     var ip = params[config.query.ip] ?? remoteIp;
     final domain = params[config.query.domain];
     final user = params[config.query.user];

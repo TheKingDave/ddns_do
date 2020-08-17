@@ -17,11 +17,11 @@ Future main(List<String> arguments) async {
   parser.addOption('config-file',
       abbr: 'c',
       defaultsTo: './config.yaml',
-      help: 'Defines which file to load',
+      help: 'Defines which config file to load',
       valueHelp: 'path');
   parser.addOption('ddns-file',
       abbr: 'd',
-      help: 'If set overides DDNS-file specified in config',
+      help: 'If set overrides DDNS-file specified in config',
       valueHelp: 'path');
   parser.addFlag('help',
       abbr: 'h',
@@ -57,7 +57,8 @@ Future main(List<String> arguments) async {
     exit(2);
   }
 
-  load(config.dotenv);
+  if (config.dotenv != null) load(config.dotenv);
+
   config.doAuthToken = env[config.doAuthTokenEnv];
   if (config.doAuthToken == null || config.doAuthToken.isEmpty) {
     logger.e('Could not find environment variable ${config.doAuthTokenEnv}');

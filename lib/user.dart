@@ -1,5 +1,5 @@
 import 'package:dbcrypt/dbcrypt.dart';
-import 'package:ddns_do/logger.dart';
+import 'logger.dart';
 
 class User {
   final String domain;

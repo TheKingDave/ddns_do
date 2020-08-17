@@ -1,4 +1,4 @@
-# .env file to load
+# if and wich .env file to load
 # if file not found logs warning
 dotenv: .env
 # host to bind to
@@ -10,7 +10,6 @@ doAuthTokenEnv: DO_AUTH_TOKEN
 # TTL for domain entries
 ttl: 60
 # File to load for ddns data
-#ddns_file: /etc/ddns_do/ddns
 ddns_file: ddns
 # Use header instead of actual ip (if used behind a proxy)
 ipHeader: X-Forwarded-For
@@ -27,7 +26,7 @@ logger:
 
 # Default prioritization for sent or remote ip (sent, remote, error)
 # what ip to use when the sent and remote ip dont match
-default_prioritize: sent
+defaultPrioritization: sent
 
 # Url or Path for suffix_list
 # If a url, it downloads the list on startup
