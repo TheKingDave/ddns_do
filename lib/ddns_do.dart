@@ -23,13 +23,13 @@ class DDNS {
 
   void handleRequest(HttpRequest request) async {
     if (request.method != 'GET') {
-      throw HttpError('Unsupported method: ${request.method}',
-          HttpStatus.methodNotAllowed);
+      throw HttpError(
+          'Unsupported method: ${request.method}', HttpStatus.methodNotAllowed);
     }
-    
+
     logger.d(request.headers);
 
-    if(config.ipHeader != null && request.headers[config.ipHeader] == null) {
+    if (config.ipHeader != null && request.headers[config.ipHeader] == null) {
       logger.e('IpHeader "${config.ipHeader}" was not set on request');
       throw HttpError.internalServerError;
     }
@@ -41,17 +41,16 @@ class DDNS {
           'Not all required GET parameters set. Required fields: ${requiredFields}');
     }
 
-    final remoteIp = request.connectionInfo.remoteAddress.address;
+    final remoteIp = config.ipHeader == null
+        ? request.connectionInfo.remoteAddress.address
+        : request.headers[config.ipHeader].first;
+
     final prioritize =
         params[config.query.prioritize] ?? config.defaultPrioritization;
     var ip = params[config.query.ip] ?? remoteIp;
     final domain = params[config.query.domain];
     final user = params[config.query.user];
     final password = params[config.query.password];
-    
-    if(config.ipHeader != null) {
-      ip = request.headers[config.ipHeader].first;
-    }
 
     if (domain == null || domain.isEmpty) {
       throw HttpError('Domain parameter is needed');
@@ -67,7 +66,7 @@ class DDNS {
 
     // Check if ips are different, check prioritization
     if (ip != remoteIp) {
-      if(prioritize == 'error') {
+      if (prioritize == 'error') {
         throw HttpError('Sent ip and remote ip do not match', 400);
       }
       if (prioritize == 'remote') {
@@ -76,7 +75,7 @@ class DDNS {
     }
 
     var status = HttpError('Unchanged', 200);
-    
+
     final idIp = await _do.getRecord(domain);
     if (idIp == null) {
       // If no record, create one
