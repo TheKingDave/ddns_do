@@ -74,19 +74,21 @@ class DDNS {
       }
     }
 
-    var status = HttpError('Unchanged', 200);
+    var status;
 
     final idIp = await _do.getRecord(domain);
     if (idIp == null) {
       // If no record, create one
       await _do.createRecord(domain, ip);
-      status = HttpError('Created', 200);
+      status = HttpError('Created $ip', 200);
     } else if (idIp.ip != ip) {
       // If ip is different update record
       await _do.updateRecord(domain, idIp.copyWith(ip: ip));
-      status = HttpError('Updated', 200);
+      status = HttpError('Updated $ip', 200);
+    } else {
+      // If ip is present and is equal don't change
+      status = HttpError('Unchanged $ip', 200);
     }
-    // If ip is present and is equal don't change
 
     throw status;
   }
