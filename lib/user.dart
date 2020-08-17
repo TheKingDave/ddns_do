@@ -22,11 +22,6 @@ class User {
   }
 
   bool checkPassword(String password) {
-    final logger = Logger();
-    logger.d(password);
-    logger.d(password.runtimeType);
-    logger.d(this.password);
-    logger.d(this.password.runtimeType);
     return DBCrypt().checkpw(password, this.password);
   }
 
