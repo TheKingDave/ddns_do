@@ -10,9 +10,6 @@ RUN dart2native bin/ddns_do.dart -o bin/ddns_do_linux
 
 FROM scratch
 
-# Create dir vor default DDNS file location
-RUN mkdir -p /var/lib/ddns_do/
-
 # For name-service order configuration, predefined hostnames like "localhost", dns server IPs
 COPY --from=dart-runtime /etc/nsswitch.conf /etc/nsswitch.conf
 COPY --from=dart-runtime /etc/hosts /etc/hosts
