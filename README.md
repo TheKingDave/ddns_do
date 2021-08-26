@@ -73,9 +73,16 @@ test.example.com:user:$2a$12$jt9c5pN1ZURYspcFBjXV/uxn54RKpYv8EjhNExqY7owZyf/GZGz
 
 Prerequisite: an DigitalOcean API token. You can generate one [here](https://cloud.digitalocean.com/account/api/tokens).
 
-### Example configuration for [FritzBox](https://at.avm.de/produkte/fritzbox/)
+### Example url configuration 
+
+#### [FritzBox](https://at.avm.de/produkte/fritzbox/)
 ```text
 https://ddns.service/?ip=<ipaddr>&domain=<domain>&user=<username>&password=<pass>
+```
+
+#### OpenWrt
+```text
+https://ddns.services/?ip=[IP]&domain=[DOMAIN]&user=[USERNAME]&password=[PASSWORD]
 ```
 
 #### Docker
