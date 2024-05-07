@@ -1,3 +1,5 @@
+# NOTICE: This repo is not actively maintined
+
 ## DDNS server for DigitalOcean
 
 This is a small DDNS server that works with DigitalOcean.
